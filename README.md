@@ -1,7 +1,7 @@
 # AA2MID
 ## AudioArts (GBC) to MIDI converter
 
-This tool converts music from Game Boy Color games using the AudioArts sound engine to MIDI format.
+This tool converts music from Game Boy Color games using the AudioArts sound engine, sometimes referred to as QuickThunder or GameBoyAudio, to MIDI format.
 
 It works with ROM images. To use it, you must specify the name of the ROM followed by the number of the bank containing the sound data (in hex).
 For games that contain 2 banks of music, you must run the program multiple times specifying where each different bank is located. However, in order to prevent files from being overwritten, the MIDI files from the first bank must either be moved to a separate folder or renamed.

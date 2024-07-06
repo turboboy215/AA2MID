@@ -8,6 +8,12 @@ For games that contain 2 banks of music, you must run the program multiple times
 
 Note that for some games, the first track is "empty". This is normal.
 
+Examples:
+* AA2MID "Ghosts 'N Goblins (U) [C][!].gbc" 3
+* AA2MID "Painter (Unl) [C][!].gbc" 10
+* AA2MID "Toobin' (U) [C][!].gbc" 3E
+* AA2MID "Toobin' (U) [C][!].gbc" 3F
+
 This tool was based on my own reverse-engineering of the sound engine. Several different variations of the driver were accounted for to ensure that every game using the sound engine is supported.
 
 Also included is another program, AA2TXT, which prints out information about the song data from each game. However, it is "behind" compared to the MIDI converter (not every game's sequence is properly supported), and the code is quite messy.

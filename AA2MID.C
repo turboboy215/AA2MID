@@ -29,6 +29,7 @@ int formatFix = 0;
 
 const char Table1Find[15] = { 0x16, 0x00, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19 };
 const char Table2Find[12] = { 0x1A, 0x22, 0x13, 0x1A, 0x13, 0x73, 0x2C, 0x72, 0x5F, 0x16, 0x00, 0x21 };
+const char Table1FindCU[10] = { 0xE0, 0x66, 0xCA, 0x4A, 0x36, 0x4B, 0xA2, 0x4B, 0x0E, 0x4C };
 
 /*Alternate method for another variation of the driver (e.g. Extreme Ghostbusters, Barca, Wendy)*/
 const char Table2FindAlt[4] = { 0x72, 0x59, 0x57, 0x21 };
@@ -260,6 +261,22 @@ int main(int args, char* argv[])
 				}
 			}
 
+			/*Workaround for Casper (US)*/
+			for (i = 0; i < bankSize; i++)
+			{
+				if (!memcmp(&romData[i], Table1FindCU, 10) && format != 1 && format != 2)
+				{
+					tablePtrLoc = 0x4952;
+					printf("Found pointer to song table at address 0x%04x!\n", tablePtrLoc);
+					tableOffset = 0x4952;
+					format = 1;
+					printf("Detected old table format.\n");
+					printf("Song table starts at 0x%04x...\n", tableOffset);
+					break;
+				}
+			}
+
+
 			/*Now try to search the bank for sequence table loader*/
 			for (i = 0; i < bankSize; i++)
 			{
@@ -325,6 +342,7 @@ int main(int args, char* argv[])
 						nextPtr = ReadLE16(&romData[i + 17 - bankAmt]);
 						if (nextPtr < bankAmt)
 						{
+							song2mid(songNum, seqPtrs, nextPtr, endPtr, curSpeed);
 							break;
 						}
 						endPtr = seqOffset;
@@ -577,7 +595,7 @@ void song2mid(int songNum, long ptrs[4], long nextPtr, long endPtr, int speed)
 			/*Calculate MIDI channel size*/
 			trackSize = midPos - midTrackBase;
 			WriteBE16(&midData[midTrackBase - 2], trackSize);
-			patPos = ptrs[curTrack]-bankAmt;
+			patPos = ptrs[curTrack] - bankAmt;
 			if (ptrs[curTrack] == 0)
 			{
 				trackEnd = 1;
@@ -595,14 +613,14 @@ void song2mid(int songNum, long ptrs[4], long nextPtr, long endPtr, int speed)
 				else
 				{
 					transpose = (signed char)romData[patPos];
-					curSeq = romData[patPos+2];
+					curSeq = romData[patPos + 2];
 					if (curSeq == 0xFF)
 					{
 						seqEnd = 1;
 					}
 				}
 
-				
+
 				/*Go to the current sequence*/
 				seqPos = seqList[curSeq];
 				while (seqEnd == 0)
@@ -610,7 +628,7 @@ void song2mid(int songNum, long ptrs[4], long nextPtr, long endPtr, int speed)
 					command[0] = romData[seqPos];
 					command[1] = romData[seqPos + 1];
 					command[2] = romData[seqPos + 2];
-					
+
 					/*End of sequence*/
 					if (command[0] == 0x00)
 					{
